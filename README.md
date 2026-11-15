@@ -94,7 +94,8 @@ Cross-compile for a Mac with `GOOS=darwin GOARCH=arm64 make build`. `pre-commit 
 `.pre-commit-config.yaml`.
 
 CI (`.github/workflows/ci.yml`) lints and runs the tests on Linux and macOS for every push to `main` and every pull
-request.
+request. The tests that run the real `claude` CLI, stopping and removing a session and starting the background service,
+skip where it is not installed, CI included.
 
 ## Releasing
 

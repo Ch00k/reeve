@@ -336,8 +336,9 @@ func TestStopInteractiveSessionNoLongerListed(t *testing.T) {
 
 // TestBackgroundActionsReportClaudeOutput runs the real `claude stop` and
 // `claude rm` on an id no session has, and reports the command with its
-// output when it fails. Needs claude on PATH; changes nothing.
+// output when it fails. Changes nothing.
 func TestBackgroundActionsReportClaudeOutput(t *testing.T) {
+	requireClaude(t)
 	s := Session{Kind: "background", ID: "zzzz0000", Name: "missing"}
 
 	err := stopSession(s, nil)
@@ -355,8 +356,8 @@ func TestBackgroundActionsReportClaudeOutput(t *testing.T) {
 // TestWithBackgroundService runs the action while Claude Code's real
 // background service is up, and leaves the service as it found it: shut down
 // again when it was down before, still running when another client had it up.
-// Needs claude on PATH.
 func TestWithBackgroundService(t *testing.T) {
+	requireClaude(t)
 	before := backgroundServicePID()
 
 	var during int
@@ -377,5 +378,14 @@ func TestWithBackgroundService(t *testing.T) {
 
 	if after := backgroundServicePID(); (after != 0) != (before != 0) {
 		t.Errorf("service pid %d after the action, %d before", after, before)
+	}
+}
+
+// requireClaude skips a test that runs the real claude CLI where it is not
+// installed, as on CI.
+func requireClaude(t *testing.T) {
+	t.Helper()
+	if _, err := exec.LookPath("claude"); err != nil {
+		t.Skip("claude is not on PATH")
 	}
 }
